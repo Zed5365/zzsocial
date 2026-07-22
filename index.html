@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0f1115" />
+  <title>ZZSocial</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header class="topbar">
+      <button id="btn-people" class="person-switch" title="Switch person" aria-label="Switch person">
+        <span class="logo">ZZ</span>
+        <span id="active-name" class="active-name">Person</span>
+        <span class="chev">▾</span>
+      </button>
+      <div class="topbar-actions">
+        <button id="btn-profiles" class="icon-btn" title="Profiles" aria-label="Profiles">👤</button>
+        <button id="btn-settings" class="icon-btn" title="Settings" aria-label="Settings">⚙︎</button>
+      </div>
+    </header>
+
+    <!-- Chat area -->
+    <main id="chat" class="chat">
+      <div id="empty-state" class="empty-state">
+        <p class="empty-title">No messages yet</p>
+        <p class="empty-sub">Start the conversation, or paste what they said below.</p>
+        <button id="btn-start" class="primary-btn">Start chat</button>
+      </div>
+    </main>
+
+    <!-- Composer: paste what THEY said -->
+    <footer class="composer">
+      <button id="btn-summary" class="composer-btn" title="Summarize conversation" aria-label="Summarize conversation">📋</button>
+      <textarea id="their-input" rows="1"
+        placeholder="Paste what they said…"
+        aria-label="What they said"></textarea>
+      <button id="btn-style" class="composer-btn" title="Message style" aria-label="Message style">🎨</button>
+      <button id="btn-send" class="send-btn" title="Add their message & draft my reply" aria-label="Send">➤</button>
+
+      <!-- Style popover (anchored above, near the style button) -->
+      <div id="style-menu" class="style-menu hidden">
+        <label class="field">
+          <span>Typing style</span>
+          <select id="cmp-style"></select>
+          <small id="cmp-style-desc" class="mbti-desc"></small>
+        </label>
+        <label class="field-toggle">
+          <input id="cmp-emojis" type="checkbox" />
+          <span>Use Emojis</span>
+        </label>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Settings modal -->
+  <div id="settings-modal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Settings">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2>Settings</h2>
+        <button id="btn-close-settings" class="icon-btn" aria-label="Close">✕</button>
+      </div>
+
+      <label class="field">
+        <span>Server URL</span>
+        <input id="set-api" type="text" placeholder="http://YOUR-EC2-IP:3001" autocomplete="off" />
+        <small>Your ZZSocial API server. All data is stored there.</small>
+      </label>
+
+      <label class="field">
+        <span>App token</span>
+        <input id="set-token" type="password" placeholder="secret" autocomplete="off" />
+        <small>The X-App-Token secret configured on the server.</small>
+      </label>
+
+      <label class="field">
+        <span>Model</span>
+        <input id="set-model" type="text" placeholder="openai/gpt-oss-20b:free" />
+        <small>Any OpenRouter model id (used by the server proxy).</small>
+      </label>
+
+      <div class="modal-actions">
+        <button id="btn-clear-chat" class="danger-btn">Clear chat</button>
+        <button id="btn-save-settings" class="primary-btn">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- People modal -->
+  <div id="people-modal" class="modal hidden" role="dialog" aria-modal="true" aria-label="People">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2>People</h2>
+        <button id="btn-close-people" class="icon-btn" aria-label="Close">✕</button>
+      </div>
+      <div id="people-list" class="people-list"></div>
+      <button id="btn-add-person" class="secondary-btn" type="button">+ Add person</button>
+    </div>
+  </div>
+
+  <!-- Profiles modal -->
+  <div id="profiles-modal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Profiles">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2>Profiles</h2>
+        <button id="btn-close-profiles" class="icon-btn" aria-label="Close">✕</button>
+      </div>
+
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-tab="own" role="tab">You</button>
+        <button class="tab" data-tab="friend" role="tab">Them</button>
+      </div>
+
+      <p id="profile-hint" class="profile-hint"></p>
+      <form id="profile-form" class="profile-form" autocomplete="off"></form>
+
+      <div class="modal-actions">
+        <button id="btn-clear-profile" class="danger-btn" type="button">Clear this profile</button>
+        <button id="btn-save-profiles" class="primary-btn" type="button">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary modal -->
+  <div id="summary-modal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Summary">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2>Summary</h2>
+        <button id="btn-close-summary" class="icon-btn" aria-label="Close">✕</button>
+      </div>
+      <div class="range-row" id="range-row">
+        <button class="range-btn" data-range="today" type="button">Today</button>
+        <button class="range-btn" data-range="week" type="button">Last week</button>
+        <button class="range-btn" data-range="month" type="button">Last month</button>
+        <button class="range-btn" data-range="all" type="button">Everything</button>
+      </div>
+      <div id="summary-result" class="summary-result">Pick a range to generate a summary.</div>
+      <div class="modal-actions">
+        <span></span>
+        <button id="btn-copy-summary" class="secondary-btn" type="button">Copy</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
