@@ -1,7 +1,7 @@
 # Serves the ZZSocial frontend at http://localhost:8777
-# Blocks the server/ folder and dotfiles so secrets are never exposed.
+# Root is the frontend/ folder, so server code and secrets are never exposed.
 param(
-  [string]$Root = "C:\Projects\ZZSocial",
+  [string]$Root = "C:\Projects\ZZSocial\frontend",
   [int]$Port = 8777
 )
 
